@@ -1,5 +1,6 @@
 # footNotes
-tinymce Editor 4.x FootNotes Plugin
+tinymce Editor 4.x FootNotes Plugin.
+> **JQuery is required**
 
 ###Version
 0.0.1 beta
