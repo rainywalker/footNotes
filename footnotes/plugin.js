@@ -9,10 +9,10 @@ var replaceTmpl = function (str, data) {
 tinymce.PluginManager.add('footnotes', function(editor) {
     function showDialog() {
         var selectedNode = editor.selection.getNode(), name = '',
-            isFootNotes = selectedNode.tagName == 'SPAN' && editor.dom.getAttrib(selectedNode, 'class') === 'wiki-fnote';
+            isFootNotes = selectedNode.tagName == 'SPAN' && editor.dom.getAttrib(selectedNode, 'class') === 'fnoteWrap';
 
         var selectIndex = (function(){
-            if (selectedNode.className == 'wiki-fnote') {
+            if (selectedNode.className == 'fnoteWrap') {
                 var num = selectedNode.childNodes[0].firstChild.nodeValue.replace(/[^0-9]/g,'');
                 return num;
             }
@@ -42,8 +42,8 @@ tinymce.PluginManager.add('footnotes', function(editor) {
                     fixFootnoteContent = (function () {
                         return encodeURIComponent(newfootnoteContent);
                     }()),
-                    htmlTemplate = '<span data-cls="foot" class="wiki-fnote" id="#wk_ft{FOOTNOTE_INDEX}" contentEditable="false"><button class="wiki-fnotepop" data-container=".wiki-fnote"  data-placement="auto bottom" data-content="'+fixFootnoteContent+'">{FOOTNOTE_INDEX}</button></span>&nbsp;',
-                    totalFootNote = editor.getDoc().querySelectorAll('.wiki-fnotepop'),
+                    htmlTemplate = '<span class="fnoteWrap" id="#wk_ft{FOOTNOTE_INDEX}"><button type="button" class="fnoteBtn" data-content="'+fixFootnoteContent+'">{FOOTNOTE_INDEX}</button></span>&nbsp;',
+                    totalFootNote = editor.getDoc().querySelectorAll('.fnoteBtn'),
                     totalCount = totalFootNote.length,
                     html;
 
@@ -62,12 +62,12 @@ tinymce.PluginManager.add('footnotes', function(editor) {
                         return next;
                     }
                     function getNext($node) {
-                        if($node.nextAll().find('.wiki-fnotepop').length > 0) {
-                            if ($node.next().hasClass('wiki-fnotepop')) {
+                        if($node.nextAll().find('.fnoteBtn').length > 0) {
+                            if ($node.next().hasClass('fnoteBtn')) {
                                 return $node.next().children().children();
                             }
                             else {
-                                return $node.nextAll().find('.wiki-fnotepop');
+                                return $node.nextAll().find('.fnoteBtn');
                             }
 
                         }
@@ -93,7 +93,7 @@ tinymce.PluginManager.add('footnotes', function(editor) {
                         }
                         return null;
                     }
-                    var currentClassNot_NextClass = nextInDOM('.wiki-fnotepop', $node);
+                    var currentClassNot_NextClass = nextInDOM('.fnoteBtn', $node);
                     return currentClassNot_NextClass;
                 }
 
@@ -125,7 +125,7 @@ tinymce.PluginManager.add('footnotes', function(editor) {
 
                 editor.execCommand('mceInsertContent', false, html);
 
-                $(editor.getDoc()).find('.wiki-fnotepop').each(function(idx){
+                $(editor.getDoc()).find('.fnoteBtn').each(function(idx){
                     $(this).text((idx+1));
                     $(this).parent().attr('id','#wk_ft' + (idx +1));
                 });
@@ -137,7 +137,7 @@ tinymce.PluginManager.add('footnotes', function(editor) {
         title : 'footnote',
         image : tinyMCE.baseURL + '/plugins/footnotes/img/footnotes.png',
         onclick: showDialog,
-        stateSelector: 'span.wiki-fnote'
+        stateSelector: 'span.fnoteWrap'
 
     });
 });
