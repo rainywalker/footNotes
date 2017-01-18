@@ -1,12 +1,13 @@
-var replaceTmpl = function (str, data) {
-    var result = str;
-    for (var key in data) {
-        result = result.replace('{'+ key +'}',data[key]);
-    }
-    return result;
-};
-
 tinymce.PluginManager.add('footnotes', function(editor) {
+
+    function replaceTmpl(str, data) {
+        var result = str;
+        for (var key in data) {
+            result = result.replace('{'+ key +'}',data[key]);
+        }
+        return result;
+    }
+
     function showDialog() {
         var selectedNode = editor.selection.getNode(), name = '',
             isFootNotes = selectedNode.tagName == 'SPAN' && editor.dom.getAttrib(selectedNode, 'class') === 'fnoteWrap';
@@ -36,7 +37,6 @@ tinymce.PluginManager.add('footnotes', function(editor) {
                 minHeight: 100,
                 value : name
             },
-
             onSubmit: function(e) {
                 var newfootnoteContent = e.data.name,
                     fixFootnoteContent = (function () {
@@ -125,6 +125,7 @@ tinymce.PluginManager.add('footnotes', function(editor) {
 
                 editor.execCommand('mceInsertContent', false, html);
 
+                // index realignment
                 $(editor.getDoc()).find('.fnoteBtn').each(function(idx){
                     $(this).text((idx+1));
                     $(this).parent().attr('id','#wk_ft' + (idx +1));
@@ -138,6 +139,5 @@ tinymce.PluginManager.add('footnotes', function(editor) {
         image : tinyMCE.baseURL + '/plugins/footnotes/img/footnotes.png',
         onclick: showDialog,
         stateSelector: 'span.fnoteWrap'
-
     });
 });
