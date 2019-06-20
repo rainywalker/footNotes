@@ -1,11 +1,12 @@
 # footNotes
-tinymce Editor 4.x FootNotes Plugin.
+tinymce Editor 4.x / 5.x FootNotes Plugin.
 > **JQuery is required**
 
-###Version
-0.0.7 beta
+#### tinymce version 4.x and 5.x support
 
-###Usage
+
+
+### Usage
     tinymce.init({
       selector: 'textarea',
       plugins: [
@@ -13,5 +14,3 @@ tinymce Editor 4.x FootNotes Plugin.
       ],
       toolbar: 'footnotes',
     });
-
-**Continually updating...**
