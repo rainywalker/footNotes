@@ -14,7 +14,7 @@ The text entered in the insert contents window is stored in the 'data-content' a
 </span>
 ````
 
-#Usage
+# Usage
 ````
 tinymce.init({
   selector: 'textarea',
