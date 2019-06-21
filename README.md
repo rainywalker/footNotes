@@ -15,10 +15,12 @@ The text entered in the insert contents window is stored in the 'data-content' a
 ````
 
 #Usage
-    tinymce.init({
-      selector: 'textarea',
-      plugins: [
-        'footnotes'
-      ],
-      toolbar: 'footnotes',
-    });
+````
+tinymce.init({
+  selector: 'textarea',
+  plugins: [
+    'footnotes'
+  ],
+  toolbar: 'footnotes',
+});
+````
