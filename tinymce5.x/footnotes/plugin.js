@@ -3,6 +3,34 @@
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+    if (typeof Array.prototype.forEach !== 'function') {
+        Array.prototype.forEach = function(cb){
+          for (var i = 0; i < this.length; i++){
+            cb.apply(this, [this[i], i, this]);
+          }
+        };
+    }
+    if (Object.defineProperty 
+        && Object.getOwnPropertyDescriptor 
+        && Object.getOwnPropertyDescriptor(Element.prototype, "textContent") 
+        && !Object.getOwnPropertyDescriptor(Element.prototype, "textContent").get) {
+        (function() {
+          var innerText = Object.getOwnPropertyDescriptor(Element.prototype, "innerText");
+          Object.defineProperty(Element.prototype, "textContent",
+           {
+             get: function() {
+               return innerText.get.call(this);
+             },
+             set: function(s) {
+               return innerText.set.call(this, s);
+             }
+           }
+         );
+        })();
+      }
+
+    
     /**
      * 
      * @param str
@@ -76,16 +104,42 @@
                     fixFootnoteContent = (function () {
                         return encodeURIComponent(newfootnoteContent);
                     }()),
-                    htmlTemplate = '<span class="fnoteWrap" id="#wk_ft{FOOTNOTE_INDEX}" contenteditable="false"><button type="button" class="fnoteBtn" data-content="'+fixFootnoteContent+'">{FOOTNOTE_INDEX}</button></span>&nbsp;',
+                    htmlTemplate = '<span class="fnoteWrap" id="#wk_ft{FOOTNOTE_INDEX}" contenteditable="false"><button type="button" class="fnoteBtn" data-content="'+fixFootnoteContent+'">{FOOTNOTE_INDEX}</button></span>',
                     totalFootNote = editor.getDoc().querySelectorAll('.fnoteBtn'),
                     totalCount = totalFootNote.length,
                     html;
+                
+                        
+                function findNextFD(node) {
+                    var getNext = function(el) {
 
-                function findNextFD($node) {
+                        var nextAll = false,
+                            elements;
 
-                    var nextInDOM = function(_selector, $node) {
-                        var next = getNext($node);
+                        nextAll = [].filter.call(el.parentNode.children, function (htmlElement) {
+                            return (htmlElement.previousElementSibling === el) ? nextAll = true : nextAll;
+                        });
 
+                        return nextAll.map(v => {
+                            if (Array.from(v.querySelectorAll('fnoteBtn').length) > 0) {
+                                
+                                $node.nextElementSibling.classList.contains('fnoteBtn') ?
+                                    elements =  $node.nextElementSibling.children.children :
+                                    elements =  v.querySelectorAll('.fnoteBtn');
+
+                                return elements
+                            }
+                            else {
+                                if (el.nodeName === 'BODY') return [];
+
+                                return getNext(el.parentNode);
+                            }
+                        })
+                    }
+                    var nextInDOM = function(_selector, el) {
+                        
+                        var next = getNext(el);
+                        
                         while(next.length !== 0) {
                             var found = searchFor(_selector, next);
                             if(found !== null) {
@@ -96,44 +150,28 @@
                         return next;
                     }
 
-                    var getNext = function($node) {
-                        if($node.nextAll().find('.fnoteBtn').length > 0) {
-                            if ($node.next().hasClass('fnoteBtn')) {
-                                return $node.next().children().children();
-                            }
-                            else {
-                                return $node.nextAll().find('.fnoteBtn');
-                            }
-
-                        }
-                        else {
-                            if ($node.prop('nodeName') == 'BODY') {
-                                return [];
-                            }
-                            return getNext($node.parent());
-                        }
-                    }
-                    var searchFor = function(_selector, $node) {
-                        if (!$node) {return false};
-                        if($node) {
+                    
+                    var searchFor = function(_selector, el) {
+                        if (!el) {return false};
+                        if(el) {
                             return $node;
                         }
                         else {
                             var found = null;
-                            $node.children().each(function() {
-                                if ($node)
-                                    found = searchFor(_selector, $(this));
+                            el.children.forEach(function() {
+                                if (el)
+                                    found = searchFor(_selector, this);
                             });
                             return found;
                         }
                         return null;
                     }
-                    var currentClassNot_NextClass = nextInDOM('.fnoteBtn', $node);
+                    var currentClassNot_NextClass = nextInDOM('.fnoteBtn', node);
 
                     return currentClassNot_NextClass;
                 }
-
-                var nextFD = findNextFD($(editor.selection.getRng().endContainer));
+                
+                var nextFD = findNextFD(editor.selection.getRng().endContainer);
 
                 if(nextFD.length) {
                     nextFD = nextFD[0];
@@ -161,20 +199,24 @@
 
                 editor.execCommand('mceInsertContent', false, html);
                 e.close()
-
+               
                 // index realignment
-                $(editor.getDoc()).find('.fnoteBtn').each(function(idx){
-                    $(this).text((idx+1));
-                    $(this).parent().attr('id','#wk_ft' + (idx +1));
-                });
+                
+                var fnoteBtn = Array.from(editor.getDoc().querySelectorAll('.fnoteBtn'));
+
+                fnoteBtn.forEach(function(value,idx){
+                    value.textContent = idx+1;
+                    value.parentNode.setAttribute('id','#wk_ft' + (idx +1))
+                })
+               
             }
         });
     };
     var Dialog = { open: open };
     var register$1 = function (editor) {
         editor.ui.registry.addToggleButton('footnotes', {
-            text: 'footnotes',
-            tooltip: 'footnotes',
+            icon : 'fnote',
+            tooltip : 'Footnote',
             onAction: function () {
 
                 return editor.execCommand('footnotes');
@@ -184,8 +226,8 @@
             }
         });
         editor.ui.registry.addMenuItem('footnotes', {
-            text: 'footnotes',
-            text: 'footNotes...',
+            icon: 'fnote',
+
             onAction: function () {
                 return editor.execCommand('footnotes');
             }
@@ -194,7 +236,6 @@
     
     var register = function (editor) {
         editor.addCommand('footnotes', function () {
-
             Dialog.open(editor);
         });
     };
@@ -204,6 +245,7 @@
 
     function Plugin () {
         global.add('footnotes', function (editor) {
+            editor.ui.registry.addIcon('fnote','<img src="'+ tinyMCE.baseURL + '/plugins/footnotes/img/fn.png' +'">')
             Commands.register(editor);
             Buttons.register(editor);
         });
