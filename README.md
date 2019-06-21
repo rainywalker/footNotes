@@ -1,12 +1,20 @@
 # footNotes
 tinymce Editor 4.x / 5.x FootNotes Plugin.
-> **JQuery is required**
-
-#### tinymce version 4.x and 5.x support
+> **JQuery is required (tinymce 4.x)**
 
 
+# Principle
 
-### Usage
+The text entered in the insert contents window is stored in the 'data-content' attribute
+
+````
+//html of button inserted in editor
+<span id="#wk_ft1" class="fnoteWrap" contenteditable="false" data-mce-selected="1">
+    <button class="fnoteBtn" type="button" data-content="the text entered">1</button>
+</span>
+````
+
+#Usage
     tinymce.init({
       selector: 'textarea',
       plugins: [
