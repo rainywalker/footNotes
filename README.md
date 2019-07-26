@@ -3,7 +3,7 @@ tinymce Editor 4.x / 5.x FootNotes Plugin.
 > **JQuery is required (tinymce 4.x)**
 
 
-# Principle
+## Principle
 
 The text entered in the insert contents window is stored in the 'data-content' attribute
 
@@ -14,7 +14,7 @@ The text entered in the insert contents window is stored in the 'data-content' a
 </span>
 ````
 
-# Usage
+## Usage
 ````
 tinymce.init({
   selector: 'textarea',
