@@ -97,7 +97,7 @@ tinymce.PluginManager.add('footnotes', function(editor) {
                     return currentClassNot_NextClass;
                 }
 
-                var nextFD = findNextFD($(editor.selection.getRng().endContainer));
+                var nextFD = findNextFD($(editor.selection.getNode()));
 
                 if(nextFD.length) {
                     nextFD = nextFD[0];
