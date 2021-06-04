@@ -42,7 +42,7 @@ tinymce.PluginManager.add('footnotes', function(editor) {
                     fixFootnoteContent = (function () {
                         return encodeURIComponent(newfootnoteContent);
                     }()),
-                    htmlTemplate = '<span class="fnoteWrap" id="#wk_ft{FOOTNOTE_INDEX}" contenteditable="false"><button type="button" class="fnoteBtn" data-content="'+fixFootnoteContent+'">{FOOTNOTE_INDEX}</button></span>&nbsp;',
+                    htmlTemplate = '<span class="fnoteWrap" id="#wk_ft{FOOTNOTE_INDEX}" contenteditable="false"><sup class="fnoteBtn" title="'+newfootnoteContent+'" data-content="'+fixFootnoteContent+'">{FOOTNOTE_INDEX}</sup></span>&nbsp;',
                     totalFootNote = editor.getDoc().querySelectorAll('.fnoteBtn'),
                     totalCount = totalFootNote.length,
                     html;
@@ -97,7 +97,7 @@ tinymce.PluginManager.add('footnotes', function(editor) {
                     return currentClassNot_NextClass;
                 }
 
-                var nextFD = findNextFD($(editor.selection.getRng().endContainer));
+                var nextFD = findNextFD($(editor.selection.getNode()));
 
                 if(nextFD.length) {
                     nextFD = nextFD[0];
